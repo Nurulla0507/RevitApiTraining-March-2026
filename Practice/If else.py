@@ -1,43 +1,3 @@
-
-
-#'He\'s the "King"' 
-
-#ctrl + /
-
-# a = 10
-# b = r"E:\Python Revit API Training\Working Files\nRevitApiTraining-March-2026"
-# xyz = 500
-
-
-# a = "-123"
-
-# x = 123
-# y = 456.9999999999
-
-# b = float(x)  
-# c = int(y)
-
-
-
-
-
-
-# a = "Hi"
-
-# #2*3 = 2+2+2
-
-# print(a*0.5)  # a*1/2 => a/2
-
-#**
-#//
-#%
-
-
-#AND -> both conditions must be true
-#OR -> at least one condition must be true
-
-
-
 # a = 10
 
 # if a >= 5:
@@ -342,91 +302,6 @@
 
 # print(type(2)==int)
 
-# y = [10,20]
-# x = [10,20,y]
-# x[-1]
-# testList = [100, 4.9, "abc", True, 10+15, "xyz", x]
-
-
-# lastItem = testList[-1]
-
-# a = testList[6]
-
-# print(a[-1][0])
-
-
-# x = 50
-# y = 50
-
-# a = [10,x,y,50,50] #list
-
-# b = (10,50,50,50,50,60,75,100) #tuple
-
-
-# c = {10,10,25,50,50,50,50,10,10, "abc"} #set
-
-
-# d = set(a)
-
-
-# name = "Prasanta"
-
-
-# names = ["Prasanta", "Pubesh", "Gaman", "Harsh", "Sandip", "Venkat", "Dnyan", "Saravana"]
-
-
-
-
-# print(names[0])
-# print(names[1])
-# print(names[2])
-# print(names[3])
-# print(names[4])
-
-
-
-
-# i = 1
-# while i <= 10:
-#     if i%2 == 0:        
-#         print(i, "is even")
-#     else:
-#         print(i, "is odd")
-#     i += 1
-
-
-# sum = 0
-# i = 1
-# while i <= 1000:
-#     sum = sum+i
-#     i += 1
-
-# print(sum)
-
-
-
-names = ["Prasanta", "Pubesh", "Gaman", "Harsh", "Sandip", "Venkat", "Dnyan", "Saravana"]
-
-for name in names:
-    #if "s" in name or "S" in name:
-    nameInLowerCase = name.upper()
-    if "S" in nameInLowerCase:
-        print(name)
-
-names.append("nfdlanh")
-
-#continue
-#break
-
-# i = 0
-# while i <= len(names)-1:
-#     print(names[i])
-#     i += 1
-
-# i = 0
-# while i in range(len(names)):
-#     print(names[i])
-#     i += 1
 
 
 
@@ -434,26 +309,6 @@ names.append("nfdlanh")
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
 
 
 
