@@ -1,0 +1,303 @@
+{
+  "Uuid": "c1a241d5-5691-47b6-9036-42d4c15383f5",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "FEC2",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "import clr\r\n\r\nimport sys\r\nsys.path.append('C:\\Program Files (x86)\\IronPython 2.7\\Lib')\r\n\r\nfrom System import *\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\n\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Electrical import *\r\nfrom Autodesk.Revit.DB.Mechanical import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\ndef tolist(obj1):\r\n\tif isinstance(obj1,(list, tuple, set)): return obj1\r\n\telse: return [obj1]\r\n\r\n#Preparing input from dynamo to revit\r\nelement = UnwrapElement(IN[0])\r\n\r\n#Do some action in a Transaction\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n#ElementMulticategoryFilter accepts i colection(C#)list as Input\r\n#syntax is List[datatype]()\r\ncatList = List[BuiltInCategory]()\r\ncatList.Add(BuiltInCategory.OST_Walls) \r\ncatList.Add(BuiltInCategory.OST_Floors)\r\ncollec = ElementMulticategoryFilter(catList)\r\nlevels = FilteredElementCollector(doc).OfClass(Level) #Collecting and Filtereing levels to get the required levelId\r\nfor level in levels:\r\n    if level.Name == \"Level 0\":\r\n        level_3     =level\r\n        level_0_ID  =level_3.Id\r\n        break\r\n# collecting Elements corresponding to the levels in the model or document using ElementLevelFilter Class\r\nlevelElem = ElementLevelFilter(level_0_ID)\r\nfec = FilteredElementCollector(doc).WherePasses(collec).WherePasses(levelElem).WhereElementIsNotElementType().ToElements()\r\n\r\n\r\nclassList = List[Type]()\r\nclassList.Add(Wall)\r\nclassList.Add(CableTray)\r\nclassList.Add(Duct)\r\n\r\nclassFilter = ElementMulticlassFilter(classList) \r\n\r\nfec = FilteredElementCollector(doc).WherePasses(classFilter).ToElements()\r\n\r\n\r\ntypelist=List[Type]()\r\ntypelist.Add(Wall)\r\ntypelist.Add(Duct)\r\ntypelist.Add(CableTray)\r\ntypelist.Add(FamilyInstance)\r\nmulticlassfilter=ElementMulticlassFilter(typelist)\r\nfec=FilteredElementCollector(doc).WherePasses(multiclassfilter).WhereElementIsNotElementType().ToElements()\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\ncatList = List[BuiltInCategory]()\r\ncatList.Add(BuiltInCategory.OST_Walls) \r\ncollec = ElementMulticategoryFilter(catList, True)\r\n\r\n\r\nlevelFilter = ElementLevelFilter(level_0_ID)\r\n\r\n\r\nfilterList = List[ElementFilter]()\r\nfilterList.Add(collec)\r\nfilterList.Add(levelFilter)\r\n\r\norFilter = LogicalAndFilter(filterList)\r\n\r\n\r\nfec = FilteredElementCollector(doc).WherePasses(orFilter).WhereElementIsNotElementType().ToElements()\r\n\r\n\r\nviewId = doc.ActiveView.Id\r\n\r\nfecView = FilteredElementCollector(doc, viewId).WherePasses(collec)\r\n\r\n\r\n\r\n\r\n\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = fecView",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "1ae3de6df391448aa7b30715abd037a4",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "5813abe18f01475989537ba7f284b7e1",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "eb84b30510504d18b8c802f9babe9dd9",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "import clr\r\n\r\nimport sys\r\nsys.path.append('C:\\Program Files (x86)\\IronPython 2.7\\Lib')\r\n\r\nimport System\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\n\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\ndef tolist(obj1):\r\n\tif isinstance(obj1,(list, tuple, set)): return obj1\r\n\telse: return [obj1]\r\n\r\n#Preparing input from dynamo to revit\r\nelement = UnwrapElement(IN[0])\r\ndyn = UnwrapElement(IN[1])\r\n\r\n#Do some action in a Transaction\r\n\r\n#Dyn point to Revit Point -> ToXyz()\r\n#Dyn Line to Revit api line -> ToRevitType()\r\n\r\n\r\n#Revit Point to Dyn Point -> ToPoint()\r\n#Revit Line to Dyn Line -> ToProtoType()\r\n\r\n\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = element.LookupParameter(\"Reference Level\").AsElementId()",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "9a7765f1c015420f88faa366e9a59df9",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "188716cf0d694127b46298aa11b1e717",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e9498f191f2a47fda99b05ea999f258a",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ffc6a791aebe4286a828ad9b0d8d9d4b",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "107f3518-6179-4505-b91c-1e41dadaf300-0004d072"
+      ],
+      "Id": "56ff44a5204d4b93b7a09a552ae23176",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b690b58cacf74d50b03e7af9c23e7269",
+          "Name": "Element",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Select a model element from the document."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "2fa3db813bdf4507bbbaf1117c255062",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        {
+          "Id": "146ddb14320c469a93742fc4dbd40525",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "74ccb876c668472690afad03dc5ef477",
+          "Name": "geometry[]",
+          "Description": "The element’s location",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "FunctionSignature": "Revit.Elements.Element.GetLocation",
+      "Replication": "Auto",
+      "Description": "Returns an element's location\n\nElement.GetLocation ( ): Geometry"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "da4e2d4069aa4894a4a4e3802859c782",
+      "NodeType": "FunctionNode",
+      "Inputs": [
+        {
+          "Id": "4c15ca5eb3d04aeb89b834cd4d79843a",
+          "Name": "x",
+          "Description": "X coordinate\n\ndouble\nDefault value : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "104d35266d6646eda16f5d889388d1f4",
+          "Name": "y",
+          "Description": "Y coordinate\n\ndouble\nDefault value : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "039a0f2d7b494dbe877831999a505cf2",
+          "Name": "Point",
+          "Description": "Point created by coordinates",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Point.ByCoordinates@double,double",
+      "Replication": "Auto",
+      "Description": "Form a Point in the XY plane given two 2 cartesian coordinates. The Z component is 0.\n\nPoint.ByCoordinates (x: double = 0, y: double = 0): Point"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "b690b58cacf74d50b03e7af9c23e7269",
+      "End": "146ddb14320c469a93742fc4dbd40525",
+      "Id": "caddfc3848514bb58f23a8084a397c1e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "b690b58cacf74d50b03e7af9c23e7269",
+      "End": "188716cf0d694127b46298aa11b1e717",
+      "Id": "30f1a632f218408fabf74e51314b4f9a",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "74ccb876c668472690afad03dc5ef477",
+      "End": "e9498f191f2a47fda99b05ea999f258a",
+      "Id": "466d04fcb8b642498e2431522405ae43",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "EnableLegacyPolyCurveBehavior": null,
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Properties",
+      "Version": "3.3",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "8.2",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "None",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.3.0.6316",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Background Preview",
+      "EyeX": -5780.6201171875,
+      "EyeY": 4050.380859375,
+      "EyeZ": 25265.6171875,
+      "LookX": 4052.123046875,
+      "LookY": -4389.80078125,
+      "LookZ": -19585.26171875,
+      "UpX": 0.04242589697241783,
+      "UpY": 0.9540387392044067,
+      "UpZ": -0.2050585001707077
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "1ae3de6df391448aa7b30715abd037a4",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -773.6987873732875,
+        "Y": 528.8475830685874
+      },
+      {
+        "Id": "9a7765f1c015420f88faa366e9a59df9",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 350.804675479067,
+        "Y": 457.21299890096884
+      },
+      {
+        "Id": "56ff44a5204d4b93b7a09a552ae23176",
+        "Name": "Select Model Element",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -7.202962475584798,
+        "Y": 313.08936128946436
+      },
+      {
+        "Id": "2fa3db813bdf4507bbbaf1117c255062",
+        "Name": "Element.GetLocation",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 262.60508791030344,
+        "Y": 167.39104266526093
+      },
+      {
+        "Id": "da4e2d4069aa4894a4a4e3802859c782",
+        "Name": "Point.ByCoordinates",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 742.9365408559214,
+        "Y": 123.35679401528253
+      }
+    ],
+    "Annotations": [],
+    "X": -480.9608657964545,
+    "Y": -809.597538023229,
+    "Zoom": 2.0695503014789267
+  }
+}
