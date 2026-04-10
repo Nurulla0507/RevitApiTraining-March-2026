@@ -1,0 +1,270 @@
+{
+  "Uuid": "a9524dbf-8b07-407a-b0de-c6c3b42a74b3",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "Element modification",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "import clr\r\n\r\nimport sys\r\nsys.path.append('C:\\Program Files (x86)\\IronPython 2.7\\Lib')\r\n\r\nimport System\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\n\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\ndef tolist(obj1):\r\n\tif isinstance(obj1,(list, tuple, set)): return obj1\r\n\telse: return [obj1]\r\n\r\n#Preparing input from dynamo to revit\r\nele = UnwrapElement(IN[0])\r\n\r\n#Do some action in a Transaction\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\"\"\"\r\ndetailLine = FilteredElementCollector(doc).OfClass(CurveElement).FirstElement()\r\ncurve = detailLine.Location.Curve\r\n\r\nwallTypes = FilteredElementCollector(doc).OfClass(WallType).ToElements()\r\nfor wallType in wallTypes:\r\n    if wallType.LookupParameter(\"Type Name\").AsString() == \"CMU Wall\":\r\n        wallTypeID = wallType.Id\r\n        break\r\n\r\nlevels = FilteredElementCollector(doc).OfClass(Level).ToElements()\r\nfor level in levels:\r\n    if level.Name == \"Level 0\":\r\n        levelID = level.Id\r\n        break\r\n\r\ntheWall = Wall.Create(doc, curve, wallTypeID, levelID, 2500/304.8, 0, False, False)\r\n\r\nmidPoint = curve.Evaluate(0.5, True)\r\n\r\ndoorTypes = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Doors).WhereElementIsElementType().ToElements()\r\nfor doorType in doorTypes:\r\n    if doorType.LookupParameter(\"Type Name\").AsString() == \"1810x2110mm\":\r\n        TypeOfDoor = doorType \r\n\r\ndoor = doc.Create.NewFamilyInstance(midPoint, TypeOfDoor, theWall, StructuralType.NonStructural)\r\n\r\n\r\nsp = XYZ()\r\nep = XYZ(10,0,0)\r\nline = Line.CreateBound(sp, ep)\r\n\r\ntypecabletray_types=FilteredElementCollector(doc).OfClass(CableTrayType).ToElements()\r\ncabletray_type=cabletray_types[0]\r\n#get level\r\nlevels=FilteredElementCollector(doc).OfClass(Level).ToElements()\r\nfor level in levels:    \r\n    if level.Name==\"Level 2\":        \r\n        levelid=level        \r\n        break\r\n#get detail line\r\ndetail_lines=FilteredElementCollector(doc).OfClass(CurveElement).ToElements()\r\ndetail_line=detail_lines[0]\r\ndl=detail_line.GeometryCurve\r\nstartpoint=dl.GetEndPoint(0)\r\nendpoint=dl.GetEndPoint(1)\r\ncabletray=CableTray.Create(doc,cabletray_type.Id,startpoint,endpoint,level.Id)\r\n\"\"\"\r\n\r\n\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = \"5\\' 12\\\"\"",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "219585299a0b49888ab8183dbce5f9f2",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "9426d51758db4b51a3dff87e843b892b",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "96013727be15475a866f967ec46273cd",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "import clr\r\n\r\nimport sys\r\nsys.path.append('C:\\Program Files (x86)\\IronPython 2.7\\Lib')\r\n\r\nimport System\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager \r\nfrom RevitServices.Transactions import TransactionManager \r\n\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\n\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication \r\napp = uiapp.Application \r\nuidoc = uiapp.ActiveUIDocument\r\n\r\ndef tolist(obj1):\r\n\tif isinstance(obj1,(list, tuple, set)): return obj1\r\n\telse: return [obj1]\r\n\r\n#Preparing input from dynamo to revit\r\ndl = UnwrapElement(IN[0])\r\nduct = UnwrapElement(IN[1])\r\n\r\n#Do some action in a Transaction\r\n\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n\"\"\"\r\nDelete elements\r\nwalls = FilteredElementCollector(doc).OfClass(Wall).ToElements()\r\n\r\nfor wall in walls:\r\n    doc.Delete(wall.Id)\r\n\"\"\"\r\n\r\n\r\nfurnitures = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Furniture).WhereElementIsNotElementType().ToElements()\r\n\r\nfor furn in furnitures:\r\n    if furn.LookupParameter(\"Mark\").AsString() == \"Test\":\r\n        ele = furn\r\n        break\r\n\r\n\"\"\"\r\npublic static ICollection<ElementId> CopyElement(\r\n    Document document,\r\n    ElementId elementToCopy,\r\n    XYZ translation\r\n)\"\"\"\r\n\r\ntrans = XYZ(-3000/304.8, 7000/304.8, 0)\r\n\r\nxValues = range(3000,9001,3000)\r\n\r\nfor x in xValues:\r\n    trans = XYZ(x/304.8, 0, 0) \r\n    #ElementTransformUtils.CopyElement(doc, ele.Id, trans)\r\n\r\n\"\"\"\r\npublic static void MoveElement(\r\n    Document document,\r\n    ElementId elementToMove,\r\n    XYZ translation\r\n)\"\"\"\r\n\r\n\r\ntrans = XYZ(5000/304.8, 5000/304.8, 0)\r\n#ElementTransformUtils.MoveElement(doc, ele.Id, trans)\r\n\r\n\r\n#cp = dl.Location.Curve.Center\r\n#ele.Location.Point = cp\r\n\r\n\r\n#newCurve = dl.Location.Curve\r\n#duct.Location.Curve = newCurve\r\n\r\n\r\nval = ele.Pinned\r\n#ele.Pinned = True\r\n\r\n\"\"\"\r\npublic static void RotateElement(\r\n    Document document,\r\n    ElementId elementToRotate,\r\n    Line axis,\r\n    double angle\r\n)\"\"\"\r\n\r\n\r\ncp = ele.Location.Point\r\ntp = XYZ(cp.X, cp.Y, cp.Z+10)\r\n\r\naxis = Line.CreateBound(cp, tp)\r\n\r\n#ElementTransformUtils.RotateElement(doc, ele.Id, axis, 0.523599)\r\n\r\n\r\n\"\"\"\r\npublic static void MirrorElement(\r\n    Document document,\r\n    ElementId elementToMirror,\r\n    Plane plane\r\n)\r\npublic static Plane CreateByNormalAndOrigin(\r\n    XYZ normal,\r\n    XYZ origin\r\n)\r\n\"\"\"\r\n\r\n\r\nxAxis = XYZ(1,0,0)\r\nplane = Plane.CreateByNormalAndOrigin(xAxis, dl.Location.Curve.GetEndPoint(0))\r\n\r\n\r\nElementTransformUtils.MirrorElement(doc, ele.Id, plane)\r\n\r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = plane",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "981b7436f69d44f28e660152295059c8",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "6c1fc5727fff46b8a0a9846cbd2ec545",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6cafaf4e0d6b4635b10776dddfc77b0e",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2a0785732169445b8d52b1a3e9b73c5f",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "e950814d-501c-4fa7-a97f-c4c39c221a25-0004d91a"
+      ],
+      "Id": "81cb8f74be85480ba36c90632baa6407",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6126b5ddc0a643aca87ca60fc61f8b51",
+          "Name": "Element",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Select a model element from the document."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "e950814d-501c-4fa7-a97f-c4c39c221a25-0004d8ea"
+      ],
+      "Id": "7f63e9f2ea5c4aeeab3ce51baa908041",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "682fe60aea6b4665909ab463f167bdb1",
+          "Name": "Element",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Select a model element from the document."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "Id": "6cfa4ddd0c0f4edcb13c8dfa97cc1036",
+      "NodeType": "FunctionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "43c7c22ec9064a51b3ffc92024a6d098",
+          "Name": "Vector",
+          "Description": "Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Vector.XAxis",
+      "Replication": "Auto",
+      "Description": "Get the canonical X axis Vector (1,0,0)\n\nVector.XAxis ( ): Vector"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "6126b5ddc0a643aca87ca60fc61f8b51",
+      "End": "6c1fc5727fff46b8a0a9846cbd2ec545",
+      "Id": "59a9165370df475880a5e9fcee63c258",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "682fe60aea6b4665909ab463f167bdb1",
+      "End": "6cafaf4e0d6b4635b10776dddfc77b0e",
+      "Id": "17823b8f03684a1781b3028627abf34e",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "EnableLegacyPolyCurveBehavior": null,
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Properties",
+      "Version": "3.3",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "8.2",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "None",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.3.0.6316",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "219585299a0b49888ab8183dbce5f9f2",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -371.38254421056286,
+        "Y": 577.8882849139843
+      },
+      {
+        "Id": "981b7436f69d44f28e660152295059c8",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 579.1000889020187,
+        "Y": 548.3223578077834
+      },
+      {
+        "Id": "81cb8f74be85480ba36c90632baa6407",
+        "Name": "Select Model Element",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 280.25856711817266,
+        "Y": 482.3792346077248
+      },
+      {
+        "Id": "7f63e9f2ea5c4aeeab3ce51baa908041",
+        "Name": "Select Model Element",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 178.34279974253474,
+        "Y": 633.5655385292008
+      },
+      {
+        "Id": "6cfa4ddd0c0f4edcb13c8dfa97cc1036",
+        "Name": "Vector.XAxis",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 409.585822715086,
+        "Y": 775.4231745462266
+      }
+    ],
+    "Annotations": [],
+    "X": -118.23708730955269,
+    "Y": -328.4089855988553,
+    "Zoom": 1.1923386367703528
+  }
+}
